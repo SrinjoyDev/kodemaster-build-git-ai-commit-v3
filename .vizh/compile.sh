@@ -2,21 +2,17 @@
 #
 # Compiles your code. This script is run before each test.
 #
-# For fast execution, uses pre-baked node_modules when available.
-#
-
 set -e
 
 cd "$(dirname "$0")/.."
 
-# Use pre-baked node_modules if available (for speed in test environment)
-if [ -d "/opt/challenge-template/node_modules" ] && [ ! -d "node_modules" ]; then
-    echo "Using pre-baked dependencies..."
-    cp -r /opt/challenge-template/node_modules ./node_modules
+# Install dependencies if not present
+if [ ! -d "node_modules" ] && [ ! -L "node_modules" ]; then
+    echo "Installing dependencies..."
+    npm install --prefer-offline --no-audit --no-fund --progress=false --loglevel=error 2>/dev/null || true
 fi
 
-# Install any new/missing dependencies (fast if node_modules exists)
-npm install --prefer-offline --no-audit --no-fund --progress=false --loglevel=error 2>/dev/null || true
-
-# Compile TypeScript to JavaScript
+# Compile TypeScript
+echo "Compiling..."
 npm run build
+
